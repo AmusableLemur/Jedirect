@@ -10,8 +10,16 @@ $app = new App([
     "debug" => true
 ]);
 
-$app->register(new Silex\Provider\FormServiceProvider());
-$app->register(new Silex\Provider\TranslationServiceProvider());
+$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+    "db.options" => [
+        "driver" => "pdo_mysql",
+        "host" => "localhost",
+        "dbname" => "jedirect",
+        "user" => "root",
+        "password" => "",
+        "charset" => "utf8"
+    ]
+]);
 $app->register(new Silex\Provider\TwigServiceProvider(), [
     "twig.path" => __DIR__."/../views",
 ]);
@@ -19,42 +27,54 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
 /**
- * Generates the form used to create the link
- * @var Silex\Application
+ * Generates a random string of desired length
+ * @var string $length
  */
-$getForm = function(App $app) {
-    return $app["form.factory"]->createBuilder("form")
-        ->add("url", "text", [
-            "constraints" => [new Assert\NotBlank(), new Assert\Url()]
-        ])
-        ->add("save", "submit")
-        ->getForm();
+$getRandomString = function($length) {
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890";
+    $string = "";
+
+    for ($i = 0; $i < $length; $i++) {
+        $index = mt_rand(0, strlen($chars) - 1);
+        $string .= $chars[$index];
+    }
+
+    return $string;
 };
 
 /**
  * Renders the main page with the form
  */
-$app->get("/", function(App $app) use ($getForm) {
-    return $app["twig"]->render("index.html.twig", [
-        "form" => $getForm($app)->createView()
-    ]);
+$app->get("/", function(App $app) {
+    return $app["twig"]->render("index.html.twig");
 })->bind("home");
 
 /**
  * Generates and stores the URL
  */
-$app->post("/", function(App $app, Request $request) use ($getForm) {
-    $form = $getForm($app);
+$app->post("/", function(App $app, Request $request) use ($getRandomString) {
+    $link = $getRandomString(10);
 
-    $form->handleRequest($request);
+    $query = $app["db"]->query("SELECT link FROM links");
+    $links = $query->fetchAll(PDO::FETCH_COLUMN);
 
-    if ($form->isValid()) {
-        // Generate URL
+    while (in_array($link, $links)) {
+        $link = $getRandomString(10);
     }
 
-    return $app["twig"]->render("index.html.twig", [
-        "form" => $form->createView()
+    $query = $app["db"]->prepare(
+        "INSERT INTO links (link, url, date_created, date_expired)
+        VALUES (:link, :url, :created, :expiry)"
+    );
+
+    $query->execute([
+        "link" => $link,
+        "url" => $request->get("url"),
+        "created" => date("Y-m-d H:i"),
+        "expiry" => date("Y-m-d H:i", strtotime("+24 hours"))
     ]);
+
+    return $app["twig"]->render("index.html.twig");
 });
 
 /**
@@ -62,9 +82,23 @@ $app->post("/", function(App $app, Request $request) use ($getForm) {
  * In case no URL is found the user is simply redirected to the homepage
  */
 $app->get("/{ident}", function(App $app, $ident) {
-    return $app->redirect(
-        $app["url_generator"]->generate("home")
-    );
+    $app["db"]->beginTransaction();
+
+    $query = $app["db"]->prepare("SELECT url FROM links WHERE link = :link");
+    $query->execute(["link" => $ident]);
+
+    $url = $query->fetchColumn();
+
+    if ($url === false) {
+        return $app->redirect(
+            $app["url_generator"]->generate("home")
+        );
+    }
+
+    $query = $app["db"]->prepare("DELETE FROM links WHERE link = :link");
+    $query->execute(["link" => $ident]);
+
+    return $app->redirect($url);
 });
 
 $app->run();
