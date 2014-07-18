@@ -97,9 +97,9 @@ $app->get("/{ident}", function(App $app, $ident) {
     $url = $query->fetchColumn();
 
     if ($url === false) {
-        return $app->redirect(
-            $app["url_generator"]->generate("home")
-        );
+        return $app["twig"]->render("index.html.twig", [
+            "error" => "Link have been used, expired or simply doesn't exist."
+        ]);
     }
 
     $query = $app["db"]->prepare("DELETE FROM links WHERE link = :link");
