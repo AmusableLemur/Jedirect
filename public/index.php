@@ -4,6 +4,7 @@ require __DIR__."/../vendor/autoload.php";
 
 use Silex\Application as App;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 $app = new App([
@@ -57,7 +58,7 @@ $app->post("/", function(App $app, Request $request) use ($getRandomString) {
 
     if (filter_var($url, FILTER_VALIDATE_URL) !== false && strpos($url, "http") !== 0) {
         return $app["twig"]->render("index.html.twig", [
-            "message" => "URL doesn't appear to be valid"
+            "error" => "URL doesn't appear to be valid"
         ]);
     }
 
@@ -80,7 +81,9 @@ $app->post("/", function(App $app, Request $request) use ($getRandomString) {
         "expiry" => date("Y-m-d H:i", strtotime("+24 hours"))
     ]);
 
-    return $app["twig"]->render("index.html.twig");
+    return $app["twig"]->render("index.html.twig", [
+        "success" => $app["url_generator"]->generate("link", ["link" => $link], UrlGeneratorInterface::ABSOLUTE_URL);
+    ]);
 });
 
 /**
@@ -103,6 +106,6 @@ $app->get("/{ident}", function(App $app, $ident) {
     $query->execute(["link" => $ident]);
 
     return $app->redirect($url);
-});
+})->bind("link");
 
 $app->run();
