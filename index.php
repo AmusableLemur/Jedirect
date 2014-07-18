@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__."/../vendor/autoload.php";
+require __DIR__."/vendor/autoload.php";
 
 use Silex\Application as App;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     ]
 ]);
 $app->register(new Silex\Provider\TwigServiceProvider(), [
-    "twig.path" => __DIR__."/../views",
+    "twig.path" => __DIR__."/views",
 ]);
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
@@ -56,7 +56,7 @@ $app->get("/", function(App $app) {
 $app->post("/", function(App $app, Request $request) use ($getRandomString) {
     $url = $request->get("url");
 
-    if (filter_var($url, FILTER_VALIDATE_URL) !== false && strpos($url, "http") !== 0) {
+    if (filter_var($url, FILTER_VALIDATE_URL) === false || strpos($url, "http") !== 0) {
         return $app["twig"]->render("index.html.twig", [
             "error" => "URL doesn't appear to be valid"
         ]);
@@ -82,7 +82,7 @@ $app->post("/", function(App $app, Request $request) use ($getRandomString) {
     ]);
 
     return $app["twig"]->render("index.html.twig", [
-        "success" => $app["url_generator"]->generate("link", ["link" => $link], UrlGeneratorInterface::ABSOLUTE_URL);
+        "link" => $app["url_generator"]->generate("link", ["ident" => $link], UrlGeneratorInterface::ABSOLUTE_URL)
     ]);
 });
 
@@ -106,6 +106,6 @@ $app->get("/{ident}", function(App $app, $ident) {
     $query->execute(["link" => $ident]);
 
     return $app->redirect($url);
-})->bind("link");
+})->assert("ident", ".*")->bind("link");
 
 $app->run();
