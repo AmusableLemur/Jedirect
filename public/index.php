@@ -82,9 +82,7 @@ $app->post("/", function(App $app, Request $request) use ($getRandomString) {
  * In case no URL is found the user is simply redirected to the homepage
  */
 $app->get("/{ident}", function(App $app, $ident) {
-    $app["db"]->beginTransaction();
-
-    $query = $app["db"]->prepare("SELECT url FROM links WHERE link = :link");
+    $query = $app["db"]->prepare("SELECT url FROM links WHERE link = :link AND date_expired > NOW()");
     $query->execute(["link" => $ident]);
 
     $url = $query->fetchColumn();
