@@ -53,7 +53,7 @@ $app->get("/", function(App $app) {
 /**
  * Generates and stores the URL
  */
-$app->post("/", function(App $app, Request $request) use ($getRandomString) {
+$app->post("/{ident}", function(App $app, Request $request) use ($getRandomString) {
     $url = $request->get("url");
 
     if (filter_var($url, FILTER_VALIDATE_URL) === false || strpos($url, "http") !== 0) {
@@ -84,7 +84,7 @@ $app->post("/", function(App $app, Request $request) use ($getRandomString) {
     return $app["twig"]->render("index.html.twig", [
         "link" => $app["url_generator"]->generate("link", ["ident" => $link], UrlGeneratorInterface::ABSOLUTE_URL)
     ]);
-});
+})->assert("ident", ".*")->value("ident", null);
 
 /**
  * Redirects the user to their destination and deletes the record from the database
