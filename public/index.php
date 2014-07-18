@@ -53,10 +53,16 @@ $app->get("/", function(App $app) {
  * Generates and stores the URL
  */
 $app->post("/", function(App $app, Request $request) use ($getRandomString) {
-    $link = $getRandomString(10);
+    $url = $request->get("url");
 
-    $query = $app["db"]->query("SELECT link FROM links");
-    $links = $query->fetchAll(PDO::FETCH_COLUMN);
+    if (filter_var($url, FILTER_VALIDATE_URL) !== false && strpos($url, "http") !== 0) {
+        return $app["twig"]->render("index.html.twig", [
+            "message" => "URL doesn't appear to be valid"
+        ]);
+    }
+
+    $link = $getRandomString(10);
+    $links = $app["db"]->query("SELECT link FROM links")->fetchAll(PDO::FETCH_COLUMN);
 
     while (in_array($link, $links)) {
         $link = $getRandomString(10);
