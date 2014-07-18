@@ -18,8 +18,19 @@
         <div class="row" style="margin-bottom:20px">
             <div class="col-md-8 col-md-offset-2">
                 <hr>
-                <p class="text-center">This is a simple URL shortening service where the link can only be used once and whithin 24 hours. Once the link has been used it is deleted from our database and no longer accessible to anyone.</p>
+                <p class="text-center">This is a simple URL shortening service where the link can only be used once and within 24 hours. Once the link has been used it is deleted from our database and no longer accessible to anyone.</p>
                 <hr>
+
+                {% if error is defined %}
+                    <div class="alert alert-danger text-center" role="alert">{{ error }}</div>
+                {% endif %}
+
+                {% if link is defined %}
+                    <div class="alert alert-info text-center" role="alert">
+                        Your link was generated successfully, it will be available for 24 hours.<br>
+                        <code>{{ link }}</code>
+                    </div>
+                {% endif %}
 
                 <form method="post">
                     <div class="form-group">
