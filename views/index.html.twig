@@ -34,7 +34,17 @@
 
                 <form method="post">
                     <div class="form-group">
-                        <input type="text" name="url" class="form-control" placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                        <input type="text" name="url" class="form-control" placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ" id="url">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="encrypted_url" id="encrypted_url">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="encrypt">
+                                Encrypt destination URL with AES 256-bit client-side encryption (requires JavaScript)
+                            </label>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-default btn-block">Save</button>
@@ -42,6 +52,14 @@
             </div>
         </div>
     </div>
+
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="{{ app.request.basepath }}/static/js/gibberish-aes-1.0.0.min.js"></script>
+    <script>
+        $("#url").keyup(function() {
+            console.log(GibberishAES.dec($(this).val(), "password").trim());
+        });
+    </script>
 </body>
 
 </html>
