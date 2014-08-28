@@ -1,5 +1,5 @@
 {
-    "name": "AmusableLemur/Jedirect",
+    "name": "amusablelemur/jedirect",
     "description": "A simple URL shortening service",
     "license": "MIT",
     "require": {
