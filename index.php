@@ -5,7 +5,6 @@ require __DIR__."/vendor/autoload.php";
 use Silex\Application as App;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 $app = new App([
     "debug" => true
