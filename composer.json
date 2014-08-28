@@ -1,4 +1,6 @@
 {
+    "name": "Jedirect",
+    "description": "A simple URL shortening service",
     "require": {
         "doctrine/dbal": "2.2.*",
         "silex/silex": "~1.1",
