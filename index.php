@@ -6,20 +6,10 @@ use Silex\Application as App;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$app = new App([
-    "debug" => true
-]);
+$app = new App();
 
-$app->register(new Silex\Provider\DoctrineServiceProvider(), [
-    "db.options" => [
-        "driver" => "pdo_mysql",
-        "host" => "localhost",
-        "dbname" => "jedirect",
-        "user" => "root",
-        "password" => "",
-        "charset" => "utf8"
-    ]
-]);
+$app->register(new Igorw\Silex\ConfigServiceProvider(__DIR__."/config.json"));
+$app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), [
     "twig.path" => __DIR__."/views",
 ]);

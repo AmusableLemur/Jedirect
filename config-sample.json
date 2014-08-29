@@ -1,0 +1,11 @@
+{
+	"debug": false,
+	"db.options": {
+		"driver": "pdo_mysql",
+		"host": "localhost",
+		"dbname": "jedirect",
+		"user": "root",
+		"password": "",
+		"charset": "utf8"
+	}
+}
