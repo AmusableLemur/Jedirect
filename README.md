@@ -12,7 +12,7 @@ Requirements
 
 Installation
 ------------
-You need to first set up a database in MySQL and import the file `schema.sql`. Other databases should work but might require minor modifications to the code. Update the configuration in `config-sample.json` to match your environment and save it as `config.json`.
+You need to first set up a database in MySQL and import the file `schema.sql`. Other databases should work but might require minor modifications to the code. Update the configuration in `config-sample.json` to match your environment and save it as `config.json`. That's all!
 
 License
 -------
