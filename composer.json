@@ -4,6 +4,7 @@
     "license": "MIT",
     "require": {
         "doctrine/dbal": "2.2.*",
+        "igorw/config-service-provider": "v1.2.2",
         "silex/silex": "~1.1",
         "symfony/twig-bridge": "~2.3",
         "twig/twig": ">=1.8,<2.0-dev"
