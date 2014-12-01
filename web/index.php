@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__."/vendor/autoload.php";
+require __DIR__."/../vendor/autoload.php";
 
 use Silex\Application as App;
 use Symfony\Component\HttpFoundation\Request;
@@ -8,10 +8,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $app = new App();
 
-$app->register(new Igorw\Silex\ConfigServiceProvider(__DIR__."/config.json"));
+$app->register(new Igorw\Silex\ConfigServiceProvider(__DIR__."/../config.json"));
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), [
-    "twig.path" => __DIR__."/views",
+    "twig.path" => __DIR__."/../views",
 ]);
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
